@@ -13,8 +13,9 @@ import {
   FIELD_ACCURACY_METRICS, 
   SUPPLIER_ACCURACY_METRICS 
 } from "@/lib/sampleData";
-import { runCrossChecks, canExportShipment } from "@/lib/crossCheckEngine";
+import { runCrossChecks } from "@/lib/crossCheckEngine";
 import { Header } from "@/components/Header";
+import { SignInScreen } from "@/components/SignInScreen";
 import { ShipmentList } from "@/components/ShipmentList";
 import { DocumentViewer } from "@/components/DocumentViewer";
 import { CrossCheckPanel } from "@/components/CrossCheckPanel";
@@ -31,16 +32,19 @@ import {
   CheckCircle2, 
   FileText, 
   ShieldCheck,
-  Split,
-  Building,
-  RotateCcw
+  Check,
+  Layers,
+  Sparkles
 } from "lucide-react";
 
 export default function Home() {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [currentRole, setCurrentRole] = useState<UserRole>("documentation_executive");
+  const [currentUserName, setCurrentUserName] = useState<string>("Pooja Sharma (Doc Exec)");
+
   const [shipments, setShipments] = useState<Shipment[]>(INITIAL_SHIPMENTS);
   const [selectedShipmentId, setSelectedShipmentId] = useState<string>("SHP-24811");
   const [activeView, setActiveView] = useState<"list" | "review">("list");
-  const [currentRole, setCurrentRole] = useState<UserRole>("documentation_executive");
   const [activeTab, setActiveTab] = useState<"shipments" | "analytics" | "roi_calculator">("shipments");
   const [activeDocType, setActiveDocType] = useState<DocumentType>("commercial_invoice");
   const [highlightedFieldKey, setHighlightedFieldKey] = useState<string | null>(null);
@@ -92,7 +96,7 @@ export default function Home() {
         shipmentId: prev.id,
         timestamp: new Date().toISOString(),
         userRole: currentRole,
-        userName: currentRole === "documentation_manager" ? "Kavita Rao (Doc Manager)" : "Pooja Sharma (Doc Exec)",
+        userName: currentUserName,
         action: "field_edit" as const,
         fieldLabel: "Gross Weight (kg)",
         oldValue: 3120,
@@ -133,7 +137,7 @@ export default function Home() {
         shipmentId: prev.id,
         timestamp: new Date().toISOString(),
         userRole: currentRole,
-        userName: currentRole === "documentation_manager" ? "Kavita Rao (Doc Manager)" : "Pooja Sharma (Doc Exec)",
+        userName: currentUserName,
         action: "cross_check_override" as const,
         notes: `Rule [${ruleId}] cleared: ${note}`,
       };
@@ -166,7 +170,6 @@ export default function Home() {
       let label = fieldKey;
 
       if (fieldKey.startsWith("item_")) {
-        // Line item update
         const parts = fieldKey.split("_");
         const idx = Number(parts[1]);
         const subKey = parts[2] as "hsn" | "qty" | "price";
@@ -188,7 +191,6 @@ export default function Home() {
           }
         }
       } else {
-        // Header / cargo field
         const f = (currentDoc.extractedFields as any)[fieldKey];
         if (f) {
           oldVal = f.value;
@@ -210,7 +212,7 @@ export default function Home() {
         shipmentId: prev.id,
         timestamp: new Date().toISOString(),
         userRole: currentRole,
-        userName: currentRole === "documentation_manager" ? "Kavita Rao" : "Pooja Sharma",
+        userName: currentUserName,
         action: "field_edit" as const,
         fieldLabel: label,
         oldValue: oldVal,
@@ -286,7 +288,7 @@ export default function Home() {
           shipmentId: prev.id,
           timestamp: new Date().toISOString(),
           userRole: currentRole,
-          userName: currentRole === "documentation_manager" ? "Kavita Rao" : "Pooja Sharma",
+          userName: currentUserName,
           action: "export_generated" as const,
           notes: "ICEGATE Bill of Entry CSV exported successfully for customs clearance.",
         },
@@ -295,7 +297,7 @@ export default function Home() {
     }));
   };
 
-  // Unconfirmed low-confidence count for current active doc
+  // Unconfirmed count
   const currentDoc =
     selectedShipment?.documents[
       activeDocType === "commercial_invoice"
@@ -317,21 +319,48 @@ export default function Home() {
     });
   }
 
+  // Cross check error count
+  const hasUnresolvedErrors = selectedShipment.crossChecks.some(
+    (c) => c.status === "error" && !c.isResolved
+  );
+
+  // If not signed in, show Sign In Screen
+  if (!isAuthenticated) {
+    return (
+      <SignInScreen
+        onSignIn={(role, userName) => {
+          setCurrentRole(role);
+          setCurrentUserName(userName);
+          setIsAuthenticated(true);
+        }}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-slate-100 text-slate-900 selection:bg-indigo-100 selection:text-indigo-900">
       {/* Top Application Bar */}
       <Header
         currentRole={currentRole}
-        onRoleChange={setCurrentRole}
+        currentUserName={currentUserName}
+        onRoleChange={(role) => {
+          setCurrentRole(role);
+          setCurrentUserName(
+            role === "documentation_executive"
+              ? "Pooja Sharma (Doc Exec)"
+              : "Kavita Rao (Doc Manager)"
+          );
+        }}
         activeTab={activeTab}
         onTabChange={(tab) => {
           setActiveTab(tab);
           if (tab === "shipments") setActiveView("list");
         }}
         onResetData={handleResetData}
+        onSignOut={() => setIsAuthenticated(false)}
       />
 
-      {/* Main App Body */}
+      {/* Main Body */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         {activeTab === "analytics" && (
           <AccuracyReport
@@ -356,28 +385,101 @@ export default function Home() {
 
         {activeTab === "shipments" && activeView === "review" && (
           <div className="space-y-4">
+            {/* 4-Step Visual Workflow Stepper */}
+            <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                {/* Step 1 */}
+                <div className="flex items-center space-x-2 p-2 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px]">
+                    ✓
+                  </div>
+                  <div>
+                    <span className="font-bold block text-[11px]">1. Ingest Documents</span>
+                    <span className="text-[10px] text-emerald-700">3/3 Docs Attached</span>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="flex items-center space-x-2 p-2 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px]">
+                    ✓
+                  </div>
+                  <div>
+                    <span className="font-bold block text-[11px]">2. Vision AI OCR</span>
+                    <span className="text-[10px] text-emerald-700">Confidence: 96.4%</span>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div
+                  className={`flex items-center space-x-2 p-2 rounded-lg border ${
+                    hasUnresolvedErrors
+                      ? "bg-rose-50 text-rose-800 border-rose-200 animate-pulse"
+                      : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                  }`}
+                >
+                  <div
+                    className={`w-5 h-5 rounded-full text-white flex items-center justify-center font-bold text-[10px] ${
+                      hasUnresolvedErrors ? "bg-rose-600" : "bg-emerald-600"
+                    }`}
+                  >
+                    {hasUnresolvedErrors ? "!" : "✓"}
+                  </div>
+                  <div>
+                    <span className="font-bold block text-[11px]">3. 3-Way Cross-Check</span>
+                    <span className="text-[10px]">
+                      {hasUnresolvedErrors ? "45 kg Delta Detected" : "Reconciliation Cleared"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Step 4 */}
+                <div
+                  className={`flex items-center space-x-2 p-2 rounded-lg border ${
+                    hasUnresolvedErrors
+                      ? "bg-slate-100 text-slate-500 border-slate-200"
+                      : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                  }`}
+                >
+                  <div
+                    className={`w-5 h-5 rounded-full text-white flex items-center justify-center font-bold text-[10px] ${
+                      hasUnresolvedErrors ? "bg-slate-400" : "bg-emerald-600"
+                    }`}
+                  >
+                    {hasUnresolvedErrors ? "4" : "✓"}
+                  </div>
+                  <div>
+                    <span className="font-bold block text-[11px]">4. ICEGATE Export</span>
+                    <span className="text-[10px]">
+                      {hasUnresolvedErrors ? "Locked by Gatekeeper" : "Ready for Download"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Review Screen Header & Breadcrumbs */}
-            <div className="bg-white border border-slate-200 rounded-lg p-3.5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <div className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setActiveView("list")}
-                  className="p-1.5 rounded-md hover:bg-slate-100 text-slate-600 transition-colors flex items-center space-x-1 text-xs font-semibold"
+                  className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-slate-100 text-slate-700 transition-colors flex items-center space-x-1.5 text-xs font-bold"
                 >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Shipments</span>
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>All Shipments</span>
                 </button>
 
-                <div className="h-4 w-px bg-slate-200"></div>
+                <div className="h-4 w-px bg-slate-300"></div>
 
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="font-bold text-base text-slate-900 font-mono">
+                    <span className="font-extrabold text-base text-slate-900 font-mono">
                       {selectedShipment.id}
                     </span>
                     <span className="text-xs text-slate-500 font-mono">
                       ({selectedShipment.billOfEntryDraftNo})
                     </span>
-                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-200">
+                    <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
                       {selectedShipment.supplierName}
                     </span>
                   </div>
@@ -391,14 +493,14 @@ export default function Home() {
               <div className="flex items-center space-x-2.5">
                 <button
                   onClick={() => setIsAuditOpen(true)}
-                  className="px-3 py-1.5 rounded text-xs font-medium border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors"
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors"
                 >
                   Audit History ({selectedShipment.auditLogs.length})
                 </button>
 
                 <button
                   onClick={() => setIsExportOpen(true)}
-                  className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-colors"
+                  className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all"
                 >
                   <FileSpreadsheet className="w-3.5 h-3.5" />
                   <span>Customs Filing CSV</span>
@@ -407,7 +509,7 @@ export default function Home() {
             </div>
 
             {/* Core Side-by-Side Review Workspace */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-210px)] min-h-[680px]">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-230px)] min-h-[680px]">
               {/* Left Column (50%): High-Fidelity Document Viewer */}
               <div className="lg:col-span-6 h-full flex flex-col">
                 <DocumentViewer
@@ -420,7 +522,7 @@ export default function Home() {
 
               {/* Right Column (50%): Cross-Checks (Top) + Field Editor (Bottom) */}
               <div className="lg:col-span-6 h-full flex flex-col space-y-4 overflow-hidden">
-                {/* Cross-Checks Engine (Top 42%) */}
+                {/* Cross-Checks Engine (Top 44%) */}
                 <div className="h-[44%] min-h-[260px]">
                   <CrossCheckPanel
                     crossChecks={selectedShipment.crossChecks}
