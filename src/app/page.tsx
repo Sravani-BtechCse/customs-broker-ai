@@ -48,6 +48,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"shipments" | "analytics" | "roi_calculator">("shipments");
   const [activeDocType, setActiveDocType] = useState<DocumentType>("commercial_invoice");
   const [highlightedFieldKey, setHighlightedFieldKey] = useState<string | null>(null);
+  const [mobilePane, setMobilePane] = useState<"document" | "crosschecks">("document");
 
   // Modals
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -508,10 +509,34 @@ export default function Home() {
               </div>
             </div>
 
+            {/* View Switcher for Split/Mobile Windows */}
+            <div className="flex lg:hidden rounded-lg bg-slate-200 p-1 mb-1">
+              <button
+                onClick={() => setMobilePane("document")}
+                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${
+                  mobilePane === "document"
+                    ? "bg-white text-indigo-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Inspect Document (Paper)
+              </button>
+              <button
+                onClick={() => setMobilePane("crosschecks")}
+                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${
+                  mobilePane === "crosschecks"
+                    ? "bg-white text-indigo-700 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Cross-Checks & Fields ({hasUnresolvedErrors ? "⚠ 1 Mismatch" : "Cleared"})
+              </button>
+            </div>
+
             {/* Core Side-by-Side Review Workspace */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-230px)] min-h-[680px]">
-              {/* Left Column (50%): High-Fidelity Document Viewer */}
-              <div className="lg:col-span-6 h-full flex flex-col">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-250px)] min-h-[640px]">
+              {/* Left Column (50% on desktop): High-Fidelity Document Viewer */}
+              <div className={`${mobilePane === "document" ? "flex" : "hidden"} lg:flex lg:col-span-6 h-full flex flex-col`}>
                 <DocumentViewer
                   documents={selectedShipment.documents}
                   activeDocType={activeDocType}
@@ -520,8 +545,8 @@ export default function Home() {
                 />
               </div>
 
-              {/* Right Column (50%): Cross-Checks (Top) + Field Editor (Bottom) */}
-              <div className="lg:col-span-6 h-full flex flex-col space-y-4 overflow-hidden">
+              {/* Right Column (50% on desktop): Cross-Checks (Top) + Field Editor (Bottom) */}
+              <div className={`${mobilePane === "crosschecks" ? "flex" : "hidden"} lg:flex lg:col-span-6 h-full flex flex-col space-y-4 overflow-hidden`}>
                 {/* Cross-Checks Engine (Top 44%) */}
                 <div className="h-[44%] min-h-[260px]">
                   <CrossCheckPanel

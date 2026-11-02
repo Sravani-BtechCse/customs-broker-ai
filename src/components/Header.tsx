@@ -107,42 +107,42 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <nav className="hidden md:flex items-center space-x-1.5 pl-4">
+          {/* Navigation Tabs (Always accessible) */}
+          <nav className="flex items-center space-x-1 overflow-x-auto py-1">
             <button
               onClick={() => onTabChange("shipments")}
-              className={`flex items-center space-x-1.5 px-3.5 py-2 text-xs rounded-lg font-medium transition-all ${
+              className={`flex items-center space-x-1.5 px-2.5 py-1.5 text-xs rounded-lg font-medium transition-all whitespace-nowrap ${
                 activeTab === "shipments"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20 font-semibold"
                   : "text-slate-300 hover:bg-slate-800 hover:text-white"
               }`}
             >
-              <Layers className="w-4 h-4" />
-              <span>Shipments & Extraction</span>
+              <Layers className="w-3.5 h-3.5" />
+              <span>Shipments</span>
             </button>
 
             <button
               onClick={() => onTabChange("analytics")}
-              className={`flex items-center space-x-1.5 px-3.5 py-2 text-xs rounded-lg font-medium transition-all ${
+              className={`flex items-center space-x-1.5 px-2.5 py-1.5 text-xs rounded-lg font-medium transition-all whitespace-nowrap ${
                 activeTab === "analytics"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20 font-semibold"
                   : "text-slate-300 hover:bg-slate-800 hover:text-white"
               }`}
             >
-              <BarChart3 className="w-4 h-4" />
-              <span>Field & Supplier Accuracy</span>
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span>Accuracy</span>
             </button>
 
             <button
               onClick={() => onTabChange("roi_calculator")}
-              className={`flex items-center space-x-1.5 px-3.5 py-2 text-xs rounded-lg font-medium transition-all ${
+              className={`flex items-center space-x-1.5 px-2.5 py-1.5 text-xs rounded-lg font-medium transition-all whitespace-nowrap ${
                 activeTab === "roi_calculator"
                   ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/20 font-semibold"
                   : "text-slate-300 hover:bg-slate-800 hover:text-white"
               }`}
             >
-              <HelpCircle className="w-4 h-4" />
-              <span>₹70.29L Financial Model</span>
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span>₹70L ROI</span>
             </button>
           </nav>
         </div>
