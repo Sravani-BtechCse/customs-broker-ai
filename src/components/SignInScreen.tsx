@@ -41,21 +41,21 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSignIn }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 flex flex-col justify-center py-12 sm:px-6 lg:px-8 text-slate-100 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 flex flex-col justify-center items-center py-6 sm:py-10 px-4 sm:px-6 lg:px-8 text-slate-100 relative overflow-y-auto">
       {/* Background ambient glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center z-10">
+      <div className="w-full max-w-md text-center z-10 mb-4">
         {/* App Logo */}
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-indigo-600 to-blue-500 shadow-xl shadow-indigo-500/25 mb-4 text-white">
-          <Anchor className="w-7 h-7" />
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 shadow-xl shadow-indigo-500/25 mb-2.5 text-white">
+          <Anchor className="w-6 h-6" />
         </div>
         
         <h1 className="text-2xl font-extrabold tracking-tight text-white">
           PortCheck AI
         </h1>
-        <p className="text-xs text-indigo-300 font-medium mt-1">
+        <p className="text-xs text-indigo-300 font-medium mt-0.5">
           Company A • Nhava Sheva (INNSA) Port Customs Document Gateway
         </p>
 
@@ -65,7 +65,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSignIn }) => {
         </div>
       </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-xl z-10 px-4">
+      <div className="w-full max-w-xl z-10">
         <div className="bg-slate-900/90 backdrop-blur-md border border-slate-800 rounded-2xl shadow-2xl p-6 sm:p-8">
           <div className="mb-6">
             <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-1">
