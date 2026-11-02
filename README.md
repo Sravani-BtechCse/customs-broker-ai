@@ -12,7 +12,8 @@
 ---
 
 ## 🚀 Live Demo & Repository
-- **Live Deployed Application:** `[DEPLOYED_VERCEL_URL]`
+- **Live Deployed Application:** [https://customs-broker-ai.vercel.app](https://customs-broker-ai.vercel.app)
+- **GitHub Repository:** [https://github.com/Sravani-BtechCse/customs-broker-ai](https://github.com/Sravani-BtechCse/customs-broker-ai)
 - **Demo Reviewer Credentials:** Instant 1-click role switcher in top bar:
   - **Documentation Executive:** `Pooja Sharma` (Document upload, field verification, discrepancy resolution)
   - **Documentation Manager:** `Kavita Rao` (Discrepancy overrides, supplier error analytics, export sign-off)

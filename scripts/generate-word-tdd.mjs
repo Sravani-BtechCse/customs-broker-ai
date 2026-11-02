@@ -61,14 +61,14 @@ async function generateDocx() {
           new Paragraph({
             children: [
               new TextRun({ text: "• GitHub Repository: ", bold: true }),
-              new TextRun({ text: "[INSERT_YOUR_PUBLIC_GITHUB_REPO_URL_HERE]", color: "2563EB" }),
+              new TextRun({ text: "https://github.com/Sravani-BtechCse/customs-broker-ai", color: "2563EB" }),
             ],
             spacing: { after: 80 },
           }),
           new Paragraph({
             children: [
               new TextRun({ text: "• Live Deployed Application: ", bold: true }),
-              new TextRun({ text: "[INSERT_YOUR_LIVE_VERCEL_URL_HERE]", color: "2563EB" }),
+              new TextRun({ text: "https://customs-broker-ai.vercel.app", color: "2563EB" }),
             ],
             spacing: { after: 240 },
           }),

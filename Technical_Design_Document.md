@@ -7,8 +7,8 @@
 ---
 
 ### Project Links
-- **GitHub Repository:** `[INSERT_YOUR_PUBLIC_GITHUB_REPO_URL_HERE]`
-- **Live Deployed Application:** `[INSERT_YOUR_LIVE_VERCEL_URL_HERE]`
+- **GitHub Repository:** [https://github.com/Sravani-BtechCse/customs-broker-ai](https://github.com/Sravani-BtechCse/customs-broker-ai)
+- **Live Deployed Application:** [https://customs-broker-ai.vercel.app](https://customs-broker-ai.vercel.app)
 
 ---
 

@@ -5,6 +5,12 @@ Customs Broker AI Document Extraction & 3-Way Cross-Check Platform
 
 ---
 
+## 📌 Project Links
+- **Live Deployed Application:** [https://customs-broker-ai.vercel.app](https://customs-broker-ai.vercel.app)
+- **GitHub Repository:** [https://github.com/Sravani-BtechCse/customs-broker-ai](https://github.com/Sravani-BtechCse/customs-broker-ai)
+
+---
+
 ## 1. Demo Reviewer Credentials
 
 The application includes instantaneous role switching via the top navigation bar with zero password hurdles:
@@ -29,7 +35,7 @@ The application includes instantaneous role switching via the top navigation bar
 
 1. **Clone the repository:**
    ```bash
-   git clone <YOUR_GITHUB_REPO_URL>
+   git clone https://github.com/Sravani-BtechCse/customs-broker-ai.git
    cd customs-broker-ai
    ```
 
